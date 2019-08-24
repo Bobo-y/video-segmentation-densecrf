@@ -48,3 +48,4 @@ class Seg:
         output = Conv2D(self.out_channel, 3, padding='same')(d5)
         model = Model(inputs=self.input_img, outputs=[output])
         model.summary()
+        return model

@@ -1,0 +1,16 @@
+{
+  "train": {
+      "gpu": "0",
+      "saved_weights": "model/seg.h5",
+      "batch_size": 1,
+      "epochs":     50,
+      "tensorboard_dir": "logs",
+      "train_color_data": "images/image/",
+      "train_bw_data": "images/mask/",
+      "valid_origin_data": "",
+      "valid_watermark_data": "",
+      "totoal_training_ imgs": 5000 ,
+      "total_val_imgs": 300,
+      "fine_tune": 100
+  }
+}

@@ -23,6 +23,12 @@ epochs = config['train']['epochs']
 total_training_imgs = config['train']['totoal_training_imgs']
 total_val_imgs = config['train']['totoal_val_imgs']
 
+train_images_path = config['train']['train_image_path']
+train_mask_path = config['train']['train_mask_path']
+
+val_images_path = config['train']['val_image_path']
+val_mask_path = config['train']['val_mask_path']
+
 
 def create_callbacks(saved_weights_name, tensorboard_logs):
     if not os.path.exists(tensorboard_logs):
@@ -70,14 +76,14 @@ callbacks = create_callbacks(config['train']['saved_weights'], config['train']['
 train_images_gen = ImageDataGenerator(preprocessing_function=normalize)
 train_images = train_images_gen.flow_from_directory(target_size=(512, 512),
                                                     class_mode=None,
-                                                    directory='images/image',
+                                                    directory=train_images_path,
                                                     seed=1,
                                                     batch_size=batch_size)
 train_masks_gen = ImageDataGenerator(preprocessing_function=normalize)
 train_masks = train_masks_gen.flow_from_directory(target_size=(512, 512),
                                                   class_mode=None,
                                                   color_mode='grayscale',
-                                                  directory='images/mask',
+                                                  directory=train_mask_path,
                                                   seed=1,
                                                   batch_size=batch_size)
 
@@ -86,14 +92,14 @@ training_data = zip(train_images, train_masks)
 val_images_gen = ImageDataGenerator(preprocessing_function=normalize)
 val_images = val_images_gen.flow_from_directory(target_size=(512, 512),
                                                 class_mode=None,
-                                                directory='images/val_img',
+                                                directory=val_images_path,
                                                 seed=1,
                                                 batch_size=batch_size)
 val_masks_gen = ImageDataGenerator(preprocessing_function=normalize)
 val_masks = val_masks_gen.flow_from_directory(target_size=(512, 512),
                                               class_mode=None,
                                               color_mode='grayscale',
-                                              directory='images/val_mask',
+                                              directory=val_mask_path,
                                               seed=1,
                                               batch_size=batch_size)
 

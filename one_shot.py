@@ -3,7 +3,7 @@ from utils import *
 from keras.optimizers import Adam
 import argparse
 import os
-from Pil import Image
+from PIL import Image
 import json
 import numpy as np
 from scipy import misc

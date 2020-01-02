@@ -4,6 +4,29 @@ import numpy as np
 import pydensecrf.densecrf as dcrf
 
 
+def normalize(img):
+    return img / 255
+
+
+def loss(y_true, y_pred):
+    logits = y_pred[:, :, :, :1]
+    labels = y_true[:, :, :, :1]
+    # balance positive and negative samples in an image
+    beta = 1 - tf.reduce_mean(labels)
+    # first apply sigmoid activation
+    predicts = tf.nn.sigmoid(logits)
+    # log +epsilon for stable cal
+    loss = tf.reduce_mean(
+        -1 * (beta * labels * tf.log(predicts + 1e-4) +
+              (1 - beta) * (1 - labels) * tf.log(1 - predicts + 1e-4)))
+    return loss
+
+
+def sigmoid(x):
+    """`y = 1 / (1 + exp(-x))`"""
+    return 1 / (1 + np.exp(-x))
+
+
 def dense_crf(img, probs, n_labels=2):
     h = probs.shape[0]
     w = probs.shape[1]
@@ -27,26 +50,3 @@ def dense_crf(img, probs, n_labels=2):
     Q = np.argmax(np.array(Q), axis=0).reshape((h, w))
 
     return Q
-
-
-def normalize(img):
-    return img / 255
-
-
-def loss(y_true, y_pred):
-    logits = y_pred[:, :, :, :1]
-    labels = y_true[:, :, :, :1]
-    # balance positive and negative samples in an image
-    beta = 1 - tf.reduce_mean(labels)
-    # first apply sigmoid activation
-    predicts = tf.nn.sigmoid(logits)
-    # log +epsilon for stable cal
-    loss = tf.reduce_mean(
-        -1 * (beta * labels * tf.log(predicts + 1e-4) +
-              (1 - beta) * (1 - labels) * tf.log(1 - predicts + 1e-4)))
-    return loss
-
-
-def sigmoid(x):
-    """`y = 1 / (1 + exp(-x))`"""
-    return 1 / (1 + np.exp(-x))

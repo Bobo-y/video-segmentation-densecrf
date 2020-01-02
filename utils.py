@@ -1,6 +1,32 @@
 import tensorflow as tf
 import keras.backend.tensorflow_backend as ktf
 import numpy as np
+import pydensecrf.densecrf as dcrf
+
+
+def dense_crf(img, probs, n_labels=2):
+    h = probs.shape[0]
+    w = probs.shape[1]
+
+    probs = np.expand_dims(probs, 0)
+    probs = np.append(1 - probs, probs, axis=0)
+
+    d = dcrf.DenseCRF2D(w, h, n_labels)
+    U = -np.log(probs)
+    U = U.reshape((n_labels, -1))
+    U = np.ascontiguousarray(U)
+    img = np.ascontiguousarray(img)
+
+    U = U.astype(np.float32)
+    d.setUnaryEnergy(U) # Unary
+
+    d.addPairwiseGaussian(sxy=20, compat=3)  #
+    d.addPairwiseBilateral(sxy=30, srgb=20, rgbim=img, compat=10)
+
+    Q = d.inference(5)
+    Q = np.argmax(np.array(Q), axis=0).reshape((h, w))
+
+    return Q
 
 
 def normalize(img):

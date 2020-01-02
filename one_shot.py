@@ -3,7 +3,7 @@ from utils import *
 from keras.optimizers import Adam
 import argparse
 import os
-from Pil import Image
+from PIL import Image
 import json
 import numpy as np
 from scipy import misc
@@ -45,14 +45,13 @@ def _main_(args):
 
     image_paths = [inp_file for inp_file in image_paths if (inp_file[-4:] in ['.jpg', '.png', 'JPEG'])]
     for image_path in image_paths:
-        image = Image.open(image_path).resize((512, 512))
-        image = normalize(np.expand_dims(np.array(image), 0))
-        res = net.predict(image, batch_size=1)
-        res = np.squeeze(res, axis=0)
-        res = sigmoid(res)
-        res_np = res.astype(np.float32)
-        cond = np.greater_equal(res_np, 0.5).astype(np.int)
-        misc.imsave(os.path.join(output_path, image_path.split('/')[-1].split('.')[0] + '.png'), cond[:, :, 0])
+        image_ori = Image.open(image_path).resize((512, 512))
+        image = normalize(np.expand_dims(np.array(image_ori), 0))
+        probs = net.predict(image, batch_size=1)
+        probs = np.squeeze(probs, axis=0)
+        probs = sigmoid(probs)
+        mask = dense_crf(np.array(image_ori).astype(np.uint8), probs)
+        misc.imsave(os.path.join(output_path, image_path.split('/')[-1].split('.')[0] + '.png'), mask)
 
 
 if __name__ == '__main__':

@@ -9,7 +9,7 @@ width: 30%;
 </style>
  
 
-* Video object segmentation based on vgg16.
+* Video object segmentation based on vgg16 + DenseCRF.
 * Training on [DAVIS](https://davischallenge.org/) dataset.
 
 show some results:

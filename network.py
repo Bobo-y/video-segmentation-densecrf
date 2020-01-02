@@ -11,7 +11,7 @@ class Seg:
                                shape=(512, 512, 3),
                                dtype='float32')
         self.out_channel = 1
-        vgg16 = VGG16(input_tensor=self.input_img,
+        vgg16 = VGG16(input_tensor=self.input_img, 
                       weights='imagenet',
                       include_top=False)
         self.locked_layers = False
@@ -45,7 +45,13 @@ class Seg:
         d4 = decoder(UpSampling2D((2, 2))(d3), self.vgg_pools[0], 32)
         d5 = decoder(UpSampling2D((2, 2))(d4), None, 32, True)
 
-        output = Conv2D(self.out_channel, 3, padding='same')(d5)
-        model = Model(inputs=self.input_img, outputs=[output])
+        mask = Conv2D(self.out_channel, 3, padding='same')(d5)
+        model = Model(inputs=self.input_img, outputs=[mask])
+        from keras.optimizers import Adam
+        opt = Adam(lr=1E-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
+        model.compile(opt, loss='mse')
         model.summary()
         return model
+
+
+Seg().seg_network()
